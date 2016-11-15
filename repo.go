@@ -11,11 +11,31 @@ import (
 
 var db *sql.DB
 
+type User [8]byte
+
 type Message struct {
-	ID      int     `json:"id"`
-	Message string  `json:"message"`
-	X       float32 `json:"x"`
-	Y       float32 `json:"y"`
+	ID       int     `json:"id"`
+	Message  string  `json:"message"`
+	X        float32 `json:"x"`
+	Y        float32 `json:"y"`
+	User     User    `json:"user"`
+	Comments []Comment
+}
+
+type Comment struct {
+	ID      int    `json:"id"`
+	Content string `json:"content"`
+	User    User
+}
+
+func RepoCreateComment(c Comment) Comment {
+	var id int
+	err := db.QueryRow("INSERT INTO comments(content) VALUES ($1) RETURNING id", c.Content).Scan(&id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.ID = id
+	return c
 }
 
 func RepoCreateMessage(m Message) Message {
@@ -30,7 +50,7 @@ func RepoCreateMessage(m Message) Message {
 }
 
 func RepoFindMessage(x float32, y float32) []Message {
-	query := fmt.Sprintf("SELECT id, message, ST_X(location::geometry) as x, ST_Y(location::geometry) as y FROM messages WHERE ST_DWithin(location, ST_GeographyFromText('SRID=4326;POINT(%v %v)'), 1000000)", x, y)
+	query := fmt.Sprintf("SELECT id, message, ST_X(location::geometry) as x, ST_Y(location::geometry) as y FROM messages WHERE ST_DWithin(location, ST_GeographyFromText('SRID=4326;POINT(%v %v)'), 10000)", x, y)
 	rows, err := db.Query(query)
 	if err != nil {
 		log.Fatal(err)
@@ -54,7 +74,12 @@ func RepoFindMessage(x float32, y float32) []Message {
 func init() {
 	var err error
 
-	db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		log.Fatal("You need to set DATABASE_URL environement variable")
+	}
+
+	db, err = sql.Open("postgres", databaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}

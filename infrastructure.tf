@@ -1,36 +1,45 @@
 provider "aws" {
-    region = "us-east-1"
+    region = "ap-northeast-2"
 }
 
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  filter {
-    name = "name"
-    values = ["ubuntu/images/ebs/ubuntu-trusty-14.04-amd64-server-*"]
-  }
-  filter {
-    name = "virtualization-type"
-    values = ["paravirtual"]
-  }
-  owners = ["099720109477"]
+resource "aws_key_pair" "deployer" {
+  key_name = "deployer-key"
+  public_key = "${file("id_rsa.pub")}"
 }
 
 resource "aws_instance" "web" {
-    ami = "${data.aws_ami.ubuntu.id}"
-    instance_type = "t1.micro"
+    ami = "ami-a04297ce"
+    instance_type = "t2.micro"
+    key_name = "${aws_key_pair.deployer.key_name}"
+    security_groups = ["${aws_security_group.allow_all.name}"]
 
-    // download s3 bucket binary 
+    connection {
+        type = "ssh"
+        user = "ec2-user"
+        private_key = "${file("id_rsa")}"
+    }
 
-    // restart if binary changes?
-
-    // acl which allows access to binary
-
-    // alternatively it creates
-    // create what?!
-    // argh
-    // memory
+    provisioner "file" {
+        source = "klotter"
+        destination = "/tmp/klotter"
+    }
 }
 
-// s3 bucket for binary
+resource "aws_security_group" "allow_all" {
+  name = "allow_all"
+  description = "Allow all inbound traffic"
 
-// s3 bucket object for binary
+  ingress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+  }
+}

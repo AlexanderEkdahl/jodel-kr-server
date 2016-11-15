@@ -1,6 +1,11 @@
-#
+# JodelKR Server
 
-## Install Go and PostgreSQL with PostGIS        
+## Dependencies
+
+* Go
+* PostgreSQL with PostGIS
+
+## Run     
         
         go get
         go build
@@ -8,8 +13,16 @@
 
 ## Insert message
 
-        curl --data "message=Alex was here&x=37.532600y=127.024612" http://localhost:8080/post
+        curl --include \
+             --request POST \
+             --header "Content-Type: application/json" \
+             --data-binary "{
+                \"message\": \"Alex was here\",
+                \"x\": 37.532600,
+                \"y\": 127.024612
+             }" \
+             'http://localhost:8080/post'
 
-## Get messages within a 1000000 m area of X and Y
+## Get messages within a 10000 m area of X and Y
 
-        curl http://localhost:8080/get?x=37.532600&y=127.024612
+        curl "http://localhost:8080/get?x=37.532600&y=127.024612"

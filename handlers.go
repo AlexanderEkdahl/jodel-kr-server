@@ -23,24 +23,23 @@ func HandlerGetMessages(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
-		log.Fatal(err)
-	}
+	decoder := json.NewDecoder(r.Body)
 
-	x, err := strconv.ParseFloat(r.Form.Get("x"), 32)
-	if err != nil {
-		log.Fatal(err)
+	type params struct {
+		Message string  `json:"message"`
+		X       float32 `json:"x"`
+		Y       float32 `json:"y"`
 	}
-	y, err := strconv.ParseFloat(r.Form.Get("y"), 32)
+	var p params
+	err := decoder.Decode(&p)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	message := Message{
-		Message: r.Form.Get("message"),
-		X:       float32(x),
-		Y:       float32(y),
+		Message: p.Message,
+		X:       p.X,
+		Y:       p.Y,
 	}
 	message = RepoCreateMessage(message)
 	json.NewEncoder(w).Encode(message)
