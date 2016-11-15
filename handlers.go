@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -10,14 +9,20 @@ import (
 func HandlerGetMessages(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.ParseFloat(r.URL.Query().Get("x"), 32)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	y, err := strconv.ParseFloat(r.URL.Query().Get("y"), 32)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
-	messages := RepoFindMessage(float32(x), float32(y))
+	messages, err := RepoFindMessage(float32(x), float32(y))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	json.NewEncoder(w).Encode(messages)
 }
@@ -33,7 +38,8 @@ func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
 	var p params
 	err := decoder.Decode(&p)
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	message := Message{
@@ -41,6 +47,11 @@ func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
 		X:       p.X,
 		Y:       p.Y,
 	}
-	message = RepoCreateMessage(message)
+	message, err = RepoCreateMessage(message)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	json.NewEncoder(w).Encode(message)
 }

@@ -1,0 +1,5 @@
+:80
+
+cors
+root www
+proxy / localhost:8080

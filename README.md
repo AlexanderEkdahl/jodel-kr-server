@@ -42,7 +42,8 @@
 
 SSH in and run
 
-        DATABASE_URL=`cat DATABASE_URL` ADDR=':80' ./klottr >klottr.log 2>&1 &
+        DATABASE_URL=`cat DATABASE_URL` ADDR=':8080' ./klottr >klottr.log 2>&1 &
+        caddy >caddy.log 2>&1 &
 
 ## SSH into the running server
 

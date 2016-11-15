@@ -46,8 +46,10 @@ resource "aws_instance" "web" {
         inline = [
             "mv /tmp/klottr $HOME/klottr",
             "chmod +x klottr",
+            "echo postgres://${aws_db_instance.default.username}:${aws_db_instance.default.password}@${aws_db_instance.default.endpoint}/${aws_db_instance.default.name} > DATABASE_URL",
+            "curl https://getcaddy.com | bash -s cors",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip klottr",
-            "echo postgres://${aws_db_instance.default.username}:${aws_db_instance.default.password}@${aws_db_instance.default.endpoint}/${aws_db_instance.default.name} > DATABASE_URL"
+            "sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/caddy",
         ]
     }
 }
@@ -83,6 +85,25 @@ resource "aws_security_group" "main" {
       cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+// data "template_file" "policy" {
+//   template = "${file("${path.module}/policy.json")}"
+
+//   vars {
+//     bucket_name = "klottr-${var.environment}"
+//   }
+// }
+
+// resource "aws_s3_bucket" "web" {
+//     force_destroy = true
+//     bucket = "klottr-${var.environment}"
+//     acl = "public-read"
+//     policy = "${data.template_file.policy.rendered}"
+
+//     website {
+//         index_document = "index.html"
+//     }
+// }
 
 output "ip" {
     value = "${aws_instance.web.public_ip}"
