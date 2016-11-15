@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/handlers"
 )
 
 func main() {
@@ -14,7 +16,7 @@ func main() {
 	}
 
 	log.Printf("Server started at http://localhost:%v", port)
-	router := NewRouter()
+	r := NewRouter()
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), handlers.CORS()(r)))
 }
