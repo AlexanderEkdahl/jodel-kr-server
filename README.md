@@ -1,5 +1,11 @@
 # Klottr Server
 
+## TODO
+
+* Better error handling
+* Support for comments
+* Support for get a users messages
+
 ## Dependencies
 
 * Go
