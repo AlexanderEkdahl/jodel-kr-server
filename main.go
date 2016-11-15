@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,13 +9,13 @@ import (
 )
 
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("You need to set PORT environement variable")
+	addr := os.Getenv("ADDR")
+	if addr == "" {
+		log.Fatal("You need to set ADDR environement variable, e.g. \":8080\"")
 	}
 
-	log.Printf("Server started at http://localhost:%v", port)
-	r := NewRouter()
+	log.Printf("Server started at %v", addr)
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), handlers.CORS()(r)))
+	r := NewRouter()
+	log.Fatal(http.ListenAndServe(addr, handlers.CORS()(r)))
 }
