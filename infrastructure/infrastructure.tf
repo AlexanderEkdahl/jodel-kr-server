@@ -42,6 +42,11 @@ resource "aws_instance" "web" {
         destination = "/tmp/klottr"
     }
 
+    provisioner "file" {
+        source = "../client/build"
+        destination = "/tmp"
+    }
+
     provisioner "remote-exec" {
         inline = [
             "mv /tmp/klottr $HOME/klottr",
@@ -50,6 +55,7 @@ resource "aws_instance" "web" {
             "curl https://getcaddy.com | bash -s cors",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip klottr",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/caddy",
+            "mv /tmp/build $HOME/www"
         ]
     }
 }
@@ -72,8 +78,8 @@ resource "aws_security_group" "main" {
   }
 
   ingress {
-      from_port = 80
-      to_port = 80
+      from_port = 443
+      to_port = 443
       protocol = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
   }
@@ -84,6 +90,10 @@ resource "aws_security_group" "main" {
       protocol = "-1"
       cidr_blocks = ["0.0.0.0/0"]
   }
+}
+
+resource "aws_eip" "web" {
+  instance = "${aws_instance.web.id}"
 }
 
 // data "template_file" "policy" {
@@ -106,5 +116,5 @@ resource "aws_security_group" "main" {
 // }
 
 output "ip" {
-    value = "${aws_instance.web.public_ip}"
+    value = "${aws_eip.web.public_ip}"
 }

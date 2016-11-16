@@ -1,5 +1,5 @@
-:80
+klottr.ekdahl.io
 
 cors
-root www
+
 proxy / localhost:8080

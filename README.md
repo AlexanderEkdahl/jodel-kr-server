@@ -40,10 +40,10 @@
         terraform taint aws_instance.web
         terraform apply
 
-SSH in and run
+SSH in and run the following using `screen`
 
-        DATABASE_URL=`cat DATABASE_URL` ADDR=':8080' ./klottr >klottr.log 2>&1 &
-        caddy >caddy.log 2>&1 &
+        DATABASE_URL=`cat DATABASE_URL` ADDR=':8080' STATIC='./www/' ./klottr
+        caddy
 
 ## SSH into the running server
 
