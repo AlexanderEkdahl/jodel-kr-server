@@ -1,11 +1,5 @@
 # Klottr Server
 
-## TODO
-
-* Better error handling
-* Support for comments
-* Support for get a users messages
-
 ## Dependencies
 
 * Go
@@ -32,6 +26,17 @@
 ## Get messages within a 10000 m area of X and Y
 
         curl "http://localhost:8080/get?x=37.532600&y=127.024612"
+
+## Insert comment
+
+        curl --include \
+             --request POST \
+             --header "Content-Type: application/json" \
+             --data-binary "{
+                \"content\": \"Amazing post\",
+                \"message_id\": 34
+             }" \
+             'http://localhost:8080/post_comment'
 
 ## Build and deploy the project
 

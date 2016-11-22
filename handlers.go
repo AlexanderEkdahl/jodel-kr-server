@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// HandlerGetMessages ...
 func HandlerGetMessages(w http.ResponseWriter, r *http.Request) {
 	x, err := strconv.ParseFloat(r.URL.Query().Get("x"), 32)
 	if err != nil {
@@ -27,6 +28,7 @@ func HandlerGetMessages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(messages)
 }
 
+// HandlerPostMessage ...
 func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
@@ -54,4 +56,31 @@ func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(message)
+}
+
+// HandlerPostComment ...
+func HandlerPostComment(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+
+	type params struct {
+		Content   string `json:"content"`
+		MessageID int    `json:"message_id"`
+	}
+	var p params
+	err := decoder.Decode(&p)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	comment := Comment{
+		Content: p.Content,
+	}
+	comment, err = RepoCreateComment(p.MessageID, comment)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(comment)
 }

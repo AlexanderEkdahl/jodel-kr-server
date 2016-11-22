@@ -2,6 +2,7 @@ package main
 
 import "net/http"
 
+// Route ...
 type Route struct {
 	Name        string
 	Method      string
@@ -9,6 +10,7 @@ type Route struct {
 	HandlerFunc http.HandlerFunc
 }
 
+// Routes ...
 type Routes []Route
 
 var routes = Routes{
@@ -23,5 +25,11 @@ var routes = Routes{
 		"POST",
 		"/post",
 		HandlerPostMessage,
+	},
+	Route{
+		"HandlerPostComment",
+		"POST",
+		"/post_comment",
+		HandlerPostComment,
 	},
 }

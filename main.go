@@ -17,5 +17,5 @@ func main() {
 	log.Printf("Server started at %v", addr)
 
 	r := NewRouter()
-	log.Fatal(http.ListenAndServe(addr, handlers.CORS()(r)))
+	log.Fatal(http.ListenAndServe(addr, handlers.LoggingHandler(os.Stdout, handlers.CORS()(r))))
 }
