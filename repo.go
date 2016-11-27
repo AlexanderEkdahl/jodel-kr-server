@@ -58,7 +58,7 @@ func RepoCreateMessage(m Message) (Message, error) {
 
 // RepoFindMessage ...
 func RepoFindMessage(x float32, y float32) ([]Message, error) {
-	query := fmt.Sprintf("SELECT id, message, ST_X(location::geometry) as x, ST_Y(location::geometry) as y, created_at, user_id FROM messages WHERE ST_DWithin(location, ST_GeographyFromText('SRID=4326;POINT(%v %v)'), 10000)", x, y)
+	query := fmt.Sprintf("SELECT id, message, ST_X(location::geometry) as x, ST_Y(location::geometry) as y, created_at FROM messages WHERE ST_DWithin(location, ST_GeographyFromText('SRID=4326;POINT(%v %v)'), 10000)", x, y)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
