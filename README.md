@@ -41,7 +41,9 @@
 ## Build and deploy the project
 
         GOOS=linux GOARCH=amd64 go build -o bin/klottr-linux-amd64
-        cd infrastructure
+        cd client
+        npm run build
+        cd ../infrastructure
         terraform taint aws_instance.web
         terraform apply
 

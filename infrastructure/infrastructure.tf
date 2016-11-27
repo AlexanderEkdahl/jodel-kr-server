@@ -60,7 +60,7 @@ resource "aws_instance" "web" {
             "curl https://getcaddy.com | bash -s cors",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip klottr",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/caddy",
-            "mv /tmp/build $HOME/www"
+            "mv /tmp/build $HOME/www",
             "mv /tmp/Caddyfile $HOME/Caddyfile"
         ]
     }
