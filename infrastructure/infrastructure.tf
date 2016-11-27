@@ -47,6 +47,11 @@ resource "aws_instance" "web" {
         destination = "/tmp"
     }
 
+    provisioner "file" {
+        source = "./Caddyfile"
+        destination = "/tmp/Caddyfile"
+    }
+
     provisioner "remote-exec" {
         inline = [
             "mv /tmp/klottr $HOME/klottr",
@@ -56,6 +61,7 @@ resource "aws_instance" "web" {
             "sudo setcap CAP_NET_BIND_SERVICE=+eip klottr",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/caddy",
             "mv /tmp/build $HOME/www"
+            "mv /tmp/Caddyfile $HOME/Caddyfile"
         ]
     }
 }
@@ -117,4 +123,9 @@ resource "aws_eip" "web" {
 
 output "ip" {
     value = "${aws_eip.web.public_ip}"
+}
+
+output "psql" {
+    sensitive = true
+    value = "psql postgres://${aws_db_instance.default.username}:${aws_db_instance.default.password}@${aws_db_instance.default.endpoint}/${aws_db_instance.default.name}"
 }

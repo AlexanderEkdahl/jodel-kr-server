@@ -18,14 +18,14 @@
              --header "Content-Type: application/json" \
              --data-binary "{
                 \"message\": \"Alex was here\",
-                \"x\": 37.532600,
-                \"y\": 127.024612
+                \"x\": 127.024612,
+                \"y\": 37.532600
              }" \
              'http://localhost:8080/post'
 
 ## Get messages within a 10000 m area of X and Y
 
-        curl "http://localhost:8080/get?x=37.532600&y=127.024612"
+        curl "http://localhost:8080/get?x=127.0&y=37.5"
 
 ## Insert comment
 
@@ -34,7 +34,7 @@
              --header "Content-Type: application/json" \
              --data-binary "{
                 \"content\": \"Amazing post\",
-                \"message_id\": 34
+                \"message_id\": 54
              }" \
              'http://localhost:8080/post_comment'
 

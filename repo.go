@@ -56,7 +56,29 @@ func RepoCreateMessage(m Message) (Message, error) {
 	return m, nil
 }
 
-// RepoFindMessage ...
+// RepoFindComments ...
+func RepoFindComments(id int) ([]Comment, error) {
+	rows, err := db.Query("SELECT id, content, created_at FROM comments WHERE message_id = $1", id)
+	if err != nil {
+		return nil, err
+	}
+
+	comments := []Comment{}
+	for rows.Next() {
+		var r Comment
+		if err := rows.Scan(&r.ID, &r.Content, &r.CreatedAt); err != nil {
+			return nil, err
+		}
+		comments = append(comments, r)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return comments, nil
+}
+
+// RepoFindMessage find all messages and their respective comments. Warning: N + 1 queries
 func RepoFindMessage(x float32, y float32) ([]Message, error) {
 	query := fmt.Sprintf("SELECT id, message, ST_X(location::geometry) as x, ST_Y(location::geometry) as y, created_at FROM messages WHERE ST_DWithin(location, ST_GeographyFromText('SRID=4326;POINT(%v %v)'), 10000)", x, y)
 	rows, err := db.Query(query)
@@ -70,6 +92,13 @@ func RepoFindMessage(x float32, y float32) ([]Message, error) {
 		if err := rows.Scan(&r.ID, &r.Message, &r.X, &r.Y, &r.CreatedAt); err != nil {
 			return nil, err
 		}
+
+		comments, err := RepoFindComments(r.ID)
+		if err != nil {
+			return nil, err
+		}
+		r.Comments = comments
+
 		messages = append(messages, r)
 	}
 	if err := rows.Err(); err != nil {
