@@ -9,7 +9,7 @@
 
         go get
         go build
-        DATABASE_URL="<postgres>" ./jodelkr
+        DATABASE_URL="<postgres>" ./klottr
 
 ## Insert message
 
@@ -19,13 +19,18 @@
              --data-binary "{
                 \"message\": \"Alex was here\",
                 \"x\": 127.024612,
-                \"y\": 37.532600
+                \"y\": 37.532600,
+                \"user_id\": \"WPpxovVbtTPH0w\"
              }" \
              'http://localhost:8080/post'
 
 ## Get messages within a 10000 m area of X and Y
 
         curl "http://localhost:8080/get?x=127.0&y=37.5"
+
+## Get messages from a user
+
+        curl "http://localhost:8080/get_user?user_id=WPpxovVbtTPH0w"
 
 ## Insert comment
 
@@ -34,7 +39,8 @@
              --header "Content-Type: application/json" \
              --data-binary "{
                 \"content\": \"Amazing post\",
-                \"message_id\": 54
+                \"message_id\": 2,
+                \"user_id\": \"WPpxovVbtTPH0w\"
              }" \
              'http://localhost:8080/post_comment'
 
@@ -49,9 +55,6 @@
 
 SSH in and run the following using `screen`
 
+        ssh ec2-user@`terraform output ip` -i id_rsa
         DATABASE_URL=`cat DATABASE_URL` ADDR=':8080' STATIC='./www/' ./klottr
         caddy
-
-## SSH into the running server
-
-        ssh ec2-user@`terraform output ip` -i id_rsa

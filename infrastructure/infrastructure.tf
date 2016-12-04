@@ -43,7 +43,7 @@ resource "aws_instance" "web" {
     }
 
     provisioner "file" {
-        source = "../client/build"
+        source = "../client/dist"
         destination = "/tmp"
     }
 
@@ -58,9 +58,8 @@ resource "aws_instance" "web" {
             "chmod +x klottr",
             "echo postgres://${aws_db_instance.default.username}:${aws_db_instance.default.password}@${aws_db_instance.default.endpoint}/${aws_db_instance.default.name} > DATABASE_URL",
             "curl https://getcaddy.com | bash -s cors",
-            "sudo setcap CAP_NET_BIND_SERVICE=+eip klottr",
             "sudo setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/caddy",
-            "mv /tmp/build $HOME/www",
+            "mv /tmp/dist $HOME/www",
             "mv /tmp/Caddyfile $HOME/Caddyfile"
         ]
     }

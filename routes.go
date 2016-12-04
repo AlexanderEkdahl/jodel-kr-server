@@ -32,4 +32,10 @@ var routes = Routes{
 		"/post_comment",
 		HandlerPostComment,
 	},
+	Route{
+		"HandlerGetMessagesWithUser",
+		"GET",
+		"/get_user",
+		HandlerGetMessagesWithUser,
+	},
 }

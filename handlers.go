@@ -36,6 +36,7 @@ func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
 		Message string  `json:"message"`
 		X       float32 `json:"x"`
 		Y       float32 `json:"y"`
+		UserID  string  `json:"user_id"`
 	}
 	var p params
 	err := decoder.Decode(&p)
@@ -48,6 +49,7 @@ func HandlerPostMessage(w http.ResponseWriter, r *http.Request) {
 		Message: p.Message,
 		X:       p.X,
 		Y:       p.Y,
+		UserID:  p.UserID,
 	}
 	message, err = RepoCreateMessage(message)
 	if err != nil {
@@ -65,6 +67,7 @@ func HandlerPostComment(w http.ResponseWriter, r *http.Request) {
 	type params struct {
 		Content   string `json:"content"`
 		MessageID int    `json:"message_id"`
+		UserID    string `json:"user_id"`
 	}
 	var p params
 	err := decoder.Decode(&p)
@@ -75,6 +78,7 @@ func HandlerPostComment(w http.ResponseWriter, r *http.Request) {
 
 	comment := Comment{
 		Content: p.Content,
+		UserID:  p.UserID,
 	}
 	comment, err = RepoCreateComment(p.MessageID, comment)
 	if err != nil {
@@ -83,4 +87,17 @@ func HandlerPostComment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(comment)
+}
+
+// HandlerGetMessagesWithUser ...
+func HandlerGetMessagesWithUser(w http.ResponseWriter, r *http.Request) {
+	userID := r.URL.Query().Get("user_id")
+
+	messages, err := RepoFindMessageWithUser(userID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(messages)
 }
